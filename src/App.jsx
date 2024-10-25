@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
 import ReactMarkdown from "react-markdown";
 
 import { Button } from "./components/ui/button";
@@ -31,12 +33,21 @@ import {
 } from "./components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 
+const formSchema = z.object({
+  url: z.string().url({ message: "Please enter a valid URL" }).optional(),
+  jsonData: z
+    .string()
+    .min(2, { message: "JSON data must be at least 2 characters" }),
+  renderType: z.enum(["html", "markdown"]),
+});
+
 export default function App() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [renderedOutput, setRenderedOutput] = useState(null);
 
   const form = useForm({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       url: "",
       jsonData: "",
