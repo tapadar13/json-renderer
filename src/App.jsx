@@ -17,6 +17,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [renderedOutput, setRenderedOutput] = useState(null);
   const [renderType, setRenderType] = useState("html");
+  const [jsonInput, setJsonInput] = useState("");
 
   async function onSubmit(values) {
     setLoading(true);
@@ -28,13 +29,17 @@ export default function App() {
       if (values.url) {
         const fetchedData = await fetchJsonData(values.url);
         jsonData = JSON.stringify(fetchedData, null, 2);
+        setJsonInput(jsonData);
         setStatus("Data fetched successfully");
       }
 
-      const parsedJson = JSON.parse(jsonData);
-      setRenderedOutput(JSON.stringify(parsedJson, null, 2));
-      setRenderType(values.renderType);
-      setStatus("JSON rendered successfully");
+      // Only try to parse if we have JSON data from either source
+      if (jsonData) {
+        const parsedJson = JSON.parse(jsonData);
+        setRenderedOutput(JSON.stringify(parsedJson, null, 2));
+        setRenderType(values.renderType);
+        setStatus("JSON rendered successfully");
+      }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
     } finally {
@@ -55,7 +60,12 @@ export default function App() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <JsonForm onSubmit={onSubmit} loading={loading} />
+            <JsonForm
+              onSubmit={onSubmit}
+              loading={loading}
+              jsonInput={jsonInput}
+              setJsonInput={setJsonInput}
+            />
           </CardContent>
           {status && (
             <CardFooter>

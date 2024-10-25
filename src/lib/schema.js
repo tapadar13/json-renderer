@@ -6,8 +6,6 @@ export const formSchema = z.object({
     .url({ message: "Please enter a valid URL" })
     .optional()
     .or(z.literal("")),
-  jsonData: z
-    .string()
-    .min(2, { message: "JSON data must be at least 2 characters" }),
+  jsonData: z.string().optional(),
   renderType: z.enum(["html", "markdown"]),
 });

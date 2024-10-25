@@ -20,8 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useEffect } from "react";
 
-export function JsonForm({ onSubmit, loading }) {
+export function JsonForm({ onSubmit, loading, jsonInput, setJsonInput }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,6 +32,11 @@ export function JsonForm({ onSubmit, loading }) {
     },
   });
 
+  // Update form when jsonInput changes
+  useEffect(() => {
+    form.setValue("jsonData", jsonInput);
+  }, [jsonInput, form]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -39,13 +45,11 @@ export function JsonForm({ onSubmit, loading }) {
           name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>API URL (Optional)</FormLabel>
+              <FormLabel>API URL</FormLabel>
               <FormControl>
                 <Input placeholder="https://api.example.com/data" {...field} />
               </FormControl>
-              <FormDescription>
-                Enter a URL to fetch JSON data, or leave blank to input manually
-              </FormDescription>
+              <FormDescription>Enter a URL to fetch JSON data</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -55,13 +59,18 @@ export function JsonForm({ onSubmit, loading }) {
           name="jsonData"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>JSON Data</FormLabel>
+              <FormLabel>JSON Data (Optional if URL provided)</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder='{"key": "value"}'
                   className="font-mono"
                   rows={8}
                   {...field}
+                  value={jsonInput || field.value}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setJsonInput(e.target.value);
+                  }}
                 />
               </FormControl>
               <FormDescription>
