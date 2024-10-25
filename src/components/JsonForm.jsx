@@ -88,11 +88,11 @@ export function JsonForm({ onSubmit, loading, jsonInput, setJsonInput }) {
               <FormLabel>Render As</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white dark:bg-gray-950">
                     <SelectValue placeholder="Select render type" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="bg-white dark:bg-gray-950">
                   <SelectItem value="html">HTML</SelectItem>
                   <SelectItem value="markdown">Markdown</SelectItem>
                 </SelectContent>
