@@ -10,6 +10,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 import { JsonForm } from "./components/JsonForm";
 import { RenderedOutput } from "./components/RenderedOutput";
+import { fetchJsonData } from "./lib/utils";
 
 export default function App() {
   const [status, setStatus] = useState("");
@@ -18,7 +19,27 @@ export default function App() {
   const [renderType, setRenderType] = useState("html");
 
   async function onSubmit(values) {
-    console.log(values);
+    setLoading(true);
+    setStatus("");
+    setRenderedOutput(null);
+
+    try {
+      let jsonData = values.jsonData;
+      if (values.url) {
+        const fetchedData = await fetchJsonData(values.url);
+        jsonData = JSON.stringify(fetchedData, null, 2);
+        setStatus("Data fetched successfully");
+      }
+
+      const parsedJson = JSON.parse(jsonData);
+      setRenderedOutput(JSON.stringify(parsedJson, null, 2));
+      setRenderType(values.renderType);
+      setStatus("JSON rendered successfully");
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

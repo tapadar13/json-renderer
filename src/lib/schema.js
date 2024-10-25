@@ -1,7 +1,11 @@
 import * as z from "zod";
 
 export const formSchema = z.object({
-  url: z.string().url({ message: "Please enter a valid URL" }).optional(),
+  url: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .optional()
+    .or(z.literal("")),
   jsonData: z
     .string()
     .min(2, { message: "JSON data must be at least 2 characters" }),
