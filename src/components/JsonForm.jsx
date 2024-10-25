@@ -104,7 +104,11 @@ export function JsonForm({ onSubmit, loading, jsonInput, setJsonInput }) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button
+          type="submit"
+          className="w-full bg-slate-900 text-white"
+          disabled={loading}
+        >
           {loading ? "Processing..." : "Render JSON"}
         </Button>
       </form>
