@@ -1,28 +1,4 @@
 import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import ReactMarkdown from "react-markdown";
-
-import { Button } from "./components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./components/ui/form";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./components/ui/select";
 import {
   Card,
   CardContent,
@@ -32,28 +8,14 @@ import {
   CardTitle,
 } from "./components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
-
-const formSchema = z.object({
-  url: z.string().url({ message: "Please enter a valid URL" }).optional(),
-  jsonData: z
-    .string()
-    .min(2, { message: "JSON data must be at least 2 characters" }),
-  renderType: z.enum(["html", "markdown"]),
-});
+import { JsonForm } from "./components/JsonForm";
+import { RenderedOutput } from "./components/RenderedOutput";
 
 export default function App() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [renderedOutput, setRenderedOutput] = useState(null);
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      url: "",
-      jsonData: "",
-      renderType: "html",
-    },
-  });
+  const [renderType, setRenderType] = useState("html");
 
   async function onSubmit(values) {
     console.log(values);
@@ -72,85 +34,7 @@ export default function App() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
-                <FormField
-                  control={form.control}
-                  name="url"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>API URL (Optional)</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://example.com/data"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Enter a URL to fetch JSON data, or leave blank to input
-                        manually
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="jsonData"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>JSON Data</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder='{"key": "value"}'
-                          className="font-mono"
-                          rows={8}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Enter valid JSON data or edit fetched data
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="renderType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Render As</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select render type" />
-                          </SelectTrigger>
-                        </FormControl>
-
-                        <SelectContent>
-                          <SelectItem value="html">HTML</SelectItem>
-                          <SelectItem value="markdown">Markdown</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormDescription>
-                        Choose how to render the JSON output
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Processing..." : "Render JSON"}
-                </Button>
-              </form>
-            </Form>
+            <JsonForm onSubmit={onSubmit} loading={loading} />
           </CardContent>
           {status && (
             <CardFooter>
@@ -167,24 +51,7 @@ export default function App() {
           )}
         </Card>
         {renderedOutput && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Rendered Output</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-white p-4 rounded-md border overflow-auto max-h-[60vh]">
-                {form.getValues("renderType") === "html" ? (
-                  <pre className="whitespace-pre-wrap font-mono text-sm">
-                    {renderedOutput}
-                  </pre>
-                ) : (
-                  <ReactMarkdown className="prose max-w-none">
-                    {renderedOutput}
-                  </ReactMarkdown>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <RenderedOutput output={renderedOutput} renderType={renderType} />
         )}
       </div>
     </div>
